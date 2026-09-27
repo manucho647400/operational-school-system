@@ -1,204 +1,502 @@
-:root {
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color: #122033;
-  background: #eef4ff;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+import { useEffect, useState } from 'react';
 
-* {
-  box-sizing: border-box;
-}
+const API_BASE = 'http://localhost:5000/api';
 
-html, body, #root {
-  margin: 0;
-  min-height: 100%;
-  min-width: 100%;
-}
+function App() {
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [dashboard, setDashboard] = useState(null);
+  const [students, setStudents] = useState([]);
+  const [teachers, setTeachers] = useState([]);
+  const [attendance, setAttendance] = useState([]);
+  const [fees, setFees] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [timetable, setTimetable] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [studentForm, setStudentForm] = useState({ name: '', className: '', age: '', gender: 'Female' });
+  const [feeForm, setFeeForm] = useState({ student: '', amount: '', status: 'Pending', dueDate: '' });
+  const [attendanceForm, setAttendanceForm] = useState({ date: '', present: '', absent: '', late: '' });
 
-body {
-  margin: 0;
-  background: linear-gradient(180deg, #edf6ff 0%, #f5f7fb 100%);
-}
+  const fetchAll = async () => {
+    try {
+      const [dashboardRes, studentsRes, teachersRes, attendanceRes, feesRes, classesRes, timetableRes] = await Promise.all([
+        fetch(`${API_BASE}/dashboard`),
+        fetch(`${API_BASE}/students`),
+        fetch(`${API_BASE}/teachers`),
+        fetch(`${API_BASE}/attendance`),
+        fetch(`${API_BASE}/fees`),
+        fetch(`${API_BASE}/classes`),
+        fetch(`${API_BASE}/timetable`)
+      ]);
 
-button {
-  font: inherit;
-}
+      const [dashboardData, studentsData, teachersData, attendanceData, feesData, classesData, timetableData] = await Promise.all([
+        dashboardRes.json(),
+        studentsRes.json(),
+        teachersRes.json(),
+        attendanceRes.json(),
+        feesRes.json(),
+        classesRes.json(),
+        timetableRes.json()
+      ]);
 
-.app-shell {
-  display: flex;
-  min-height: 100vh;
-}
+      setDashboard(dashboardData);
+      setStudents(studentsData);
+      setTeachers(teachersData);
+      setAttendance(attendanceData);
+      setFees(feesData);
+      setClasses(classesData);
+      setTimetable(timetableData);
+    } catch (error) {
+      console.error('Failed to load school system data', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-.sidebar {
-  width: 240px;
-  background: #0f172a;
-  color: #edf6ff;
-  padding: 24px 18px;
-}
+  useEffect(() => {
+    fetchAll();
+  }, []);
 
-.brand {
-  border-bottom: 1px solid rgba(255,255,255,0.12);
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-}
+  const handleStudentSubmit = async (event) => {
+    event.preventDefault();
+    const payload = {
+      ...studentForm,
+      age: Number(studentForm.age),
+      status: 'Active'
+    };
 
-.brand h2 {
-  margin: 0;
-  font-size: 1.5rem;
-}
+    try {
+      const response = await fetch(`${API_BASE}/students`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
-.sidebar nav {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+      if (response.ok) {
+        setStudentForm({ name: '', className: '', age: '', gender: 'Female' });
+        fetchAll();
+      }
+    } catch (error) {
+      console.error('Error creating student', error);
+    }
+  };
 
-.sidebar nav a {
-  color: #dfeafc;
-  text-decoration: none;
-  padding: 10px 12px;
-  border-radius: 10px;
-  transition: background 0.2s ease;
-}
+  const handleFeeSubmit = async (event) => {
+    event.preventDefault();
+    const payload = {
+      ...feeForm,
+      amount: Number(feeForm.amount)
+    };
 
-.sidebar nav a:hover {
-  background: rgba(255,255,255,0.08);
-}
+    try {
+      const response = await fetch(`${API_BASE}/fees`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
-.main-content {
-  flex: 1;
-  padding: 28px;
-}
+      if (response.ok) {
+        setFeeForm({ student: '', amount: '', status: 'Pending', dueDate: '' });
+        fetchAll();
+      }
+    } catch (error) {
+      console.error('Error creating fee record', error);
+    }
+  };
 
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 22px;
-}
+  const handleAttendanceSubmit = async (event) => {
+    event.preventDefault();
 
-.eyebrow {
-  color: #4f46e5;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin: 0 0 6px;
-  font-size: 0.74rem;
-  font-weight: 700;
-}
+    try {
+      const response = await fetch(`${API_BASE}/attendance`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date: attendanceForm.date,
+          present: Number(attendanceForm.present),
+          absent: Number(attendanceForm.absent),
+          late: Number(attendanceForm.late)
+        })
+      });
 
-.topbar h1 {
-  margin: 0;
-  font-size: 2rem;
-}
+      if (response.ok) {
+        setAttendanceForm({ date: '', present: '', absent: '', late: '' });
+        fetchAll();
+      }
+    } catch (error) {
+      console.error('Error saving attendance', error);
+    }
+  };
 
-.primary-btn {
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 18px;
-  cursor: pointer;
-  font-weight: 600;
-}
+  const navItems = [
+    { key: 'dashboard', label: 'Dashboard' },
+    { key: 'students', label: 'Students' },
+    { key: 'teachers', label: 'Teachers' },
+    { key: 'attendance', label: 'Attendance' },
+    { key: 'fees', label: 'Fees' },
+    { key: 'timetable', label: 'Timetable' }
+  ];
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(150px, 1fr));
-  gap: 18px;
-  margin-bottom: 24px;
-}
-
-.stat-card,
-.panel {
-  background: rgba(255,255,255,0.92);
-  border: 1px solid #dbe7ff;
-  border-radius: 16px;
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.04);
-}
-
-.stat-card {
-  padding: 20px 18px;
-}
-
-.stat-card span {
-  display: block;
-  color: #42526e;
-  font-size: 0.82rem;
-  margin-bottom: 8px;
-}
-
-.stat-card strong {
-  font-size: 2rem;
-}
-
-.panel-grid {
-  display: grid;
-  grid-template-columns: 1.3fr 1fr;
-  gap: 18px;
-  margin-bottom: 18px;
-}
-
-.panel {
-  padding: 20px;
-}
-
-.panel h3 {
-  margin-top: 0;
-  margin-bottom: 16px;
-}
-
-.attendance-row,
-.list-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid #edf2f7;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  text-align: left;
-  padding: 10px 8px;
-  border-bottom: 1px solid #edf2f7;
-}
-
-th {
-  color: #42526e;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.loading {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #1d4ed8;
-}
-
-@media (max-width: 980px) {
-  .app-shell {
-    flex-direction: column;
+  if (loading) {
+    return <div className="loading">Loading school dashboard...</div>;
   }
 
-  .sidebar {
-    width: 100%;
-  }
+  return (
+    <div className="app-shell">
+      <aside className="sidebar">
+        <div className="brand">
+          <h2>SchoolOps</h2>
+          <small>{dashboard?.location}</small>
+        </div>
+        <nav>
+          {navItems.map((item) => (
+            <button
+              key={item.key}
+              className={activeTab === item.key ? 'nav-button active' : 'nav-button'}
+              onClick={() => setActiveTab(item.key)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
+      </aside>
 
-  .stats-grid,
-  .panel-grid {
-    grid-template-columns: 1fr;
-  }
+      <main className="main-content">
+        <header className="topbar">
+          <div>
+            <p className="eyebrow">Single School Operations</p>
+            <h1>{dashboard?.schoolName || 'School Dashboard'}</h1>
+          </div>
+          <div className="header-pill">Principal: {dashboard?.principal}</div>
+        </header>
+
+        {activeTab === 'dashboard' && (
+          <>
+            <section className="stats-grid">
+              <div className="stat-card">
+                <span>Total Students</span>
+                <strong>{dashboard?.totalStudents}</strong>
+              </div>
+              <div className="stat-card">
+                <span>Active Students</span>
+                <strong>{dashboard?.activeStudents}</strong>
+              </div>
+              <div className="stat-card">
+                <span>Teachers</span>
+                <strong>{dashboard?.totalTeachers}</strong>
+              </div>
+              <div className="stat-card">
+                <span>Pending Fees</span>
+                <strong>{dashboard?.pendingFees}</strong>
+              </div>
+            </section>
+
+            <section className="panel-grid">
+              <div className="panel">
+                <h3>Latest Attendance</h3>
+                <div className="attendance-row highlight">
+                  <span>{attendance[0]?.date}</span>
+                  <span>Present: {attendance[0]?.present}</span>
+                  <span>Absent: {attendance[0]?.absent}</span>
+                  <span>Late: {attendance[0]?.late}</span>
+                </div>
+                {attendance.slice(1).map((entry) => (
+                  <div key={entry.date} className="attendance-row">
+                    <span>{entry.date}</span>
+                    <span>Present: {entry.present}</span>
+                    <span>Absent: {entry.absent}</span>
+                    <span>Late: {entry.late}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="panel">
+                <h3>Classes</h3>
+                {classes.map((classItem) => (
+                  <div key={classItem.id} className="list-row">
+                    <span>{classItem.name}</span>
+                    <span>{classItem.students} students</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="panel-grid two-columns">
+              <div className="panel">
+                <h3>Students</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Class</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {students.slice(0, 5).map((student) => (
+                      <tr key={student.id}>
+                        <td>{student.name}</td>
+                        <td>{student.className}</td>
+                        <td>{student.status}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="panel">
+                <h3>Teachers</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Subject</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {teachers.map((teacher) => (
+                      <tr key={teacher.id}>
+                        <td>{teacher.name}</td>
+                        <td>{teacher.subject}</td>
+                        <td>{teacher.status}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </>
+        )}
+
+        {activeTab === 'students' && (
+          <section className="content-stack">
+            <div className="panel">
+              <h3>Add Student</h3>
+              <form className="form-grid" onSubmit={handleStudentSubmit}>
+                <input
+                  value={studentForm.name}
+                  onChange={(e) => setStudentForm({ ...studentForm, name: e.target.value })}
+                  placeholder="Student name"
+                  required
+                />
+                <input
+                  value={studentForm.className}
+                  onChange={(e) => setStudentForm({ ...studentForm, className: e.target.value })}
+                  placeholder="Class name"
+                  required
+                />
+                <input
+                  value={studentForm.age}
+                  onChange={(e) => setStudentForm({ ...studentForm, age: e.target.value })}
+                  type="number"
+                  placeholder="Age"
+                  required
+                />
+                <select
+                  value={studentForm.gender}
+                  onChange={(e) => setStudentForm({ ...studentForm, gender: e.target.value })}
+                >
+                  <option value="Female">Female</option>
+                  <option value="Male">Male</option>
+                </select>
+                <button type="submit" className="primary-btn">Save Student</button>
+              </form>
+            </div>
+
+            <div className="panel">
+              <h3>Student Directory</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Class</th>
+                    <th>Age</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {students.map((student) => (
+                    <tr key={student.id}>
+                      <td>{student.name}</td>
+                      <td>{student.className}</td>
+                      <td>{student.age}</td>
+                      <td>{student.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'teachers' && (
+          <section className="panel">
+            <h3>Staff and Teachers</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Subject</th>
+                  <th>Department</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {teachers.map((teacher) => (
+                  <tr key={teacher.id}>
+                    <td>{teacher.name}</td>
+                    <td>{teacher.subject}</td>
+                    <td>{teacher.department}</td>
+                    <td>{teacher.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        )}
+
+        {activeTab === 'attendance' && (
+          <section className="content-stack">
+            <div className="panel">
+              <h3>Record Daily Attendance</h3>
+              <form className="form-grid" onSubmit={handleAttendanceSubmit}>
+                <input
+                  type="date"
+                  value={attendanceForm.date}
+                  onChange={(e) => setAttendanceForm({ ...attendanceForm, date: e.target.value })}
+                  required
+                />
+                <input
+                  type="number"
+                  value={attendanceForm.present}
+                  onChange={(e) => setAttendanceForm({ ...attendanceForm, present: e.target.value })}
+                  placeholder="Present"
+                  required
+                />
+                <input
+                  type="number"
+                  value={attendanceForm.absent}
+                  onChange={(e) => setAttendanceForm({ ...attendanceForm, absent: e.target.value })}
+                  placeholder="Absent"
+                  required
+                />
+                <input
+                  type="number"
+                  value={attendanceForm.late}
+                  onChange={(e) => setAttendanceForm({ ...attendanceForm, late: e.target.value })}
+                  placeholder="Late"
+                  required
+                />
+                <button type="submit" className="primary-btn">Save</button>
+              </form>
+            </div>
+
+            <div className="panel">
+              <h3>Attendance Logs</h3>
+              {attendance.map((entry) => (
+                <div key={entry.date} className="attendance-row">
+                  <span>{entry.date}</span>
+                  <span>Present: {entry.present}</span>
+                  <span>Absent: {entry.absent}</span>
+                  <span>Late: {entry.late}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'fees' && (
+          <section className="content-stack">
+            <div className="panel">
+              <h3>Record Fee Payment</h3>
+              <form className="form-grid" onSubmit={handleFeeSubmit}>
+                <input
+                  value={feeForm.student}
+                  onChange={(e) => setFeeForm({ ...feeForm, student: e.target.value })}
+                  placeholder="Student name"
+                  required
+                />
+                <input
+                  value={feeForm.amount}
+                  onChange={(e) => setFeeForm({ ...feeForm, amount: e.target.value })}
+                  type="number"
+                  placeholder="Amount"
+                  required
+                />
+                <select
+                  value={feeForm.status}
+                  onChange={(e) => setFeeForm({ ...feeForm, status: e.target.value })}
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="Partial">Partial</option>
+                  <option value="Paid">Paid</option>
+                </select>
+                <input
+                  type="date"
+                  value={feeForm.dueDate}
+                  onChange={(e) => setFeeForm({ ...feeForm, dueDate: e.target.value })}
+                  required
+                />
+                <button type="submit" className="primary-btn">Save Fee</button>
+              </form>
+            </div>
+
+            <div className="panel">
+              <h3>Fee Tracker</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Due Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {fees.map((fee) => (
+                    <tr key={fee.id}>
+                      <td>{fee.student}</td>
+                      <td>KES {fee.amount.toLocaleString()}</td>
+                      <td>{fee.status}</td>
+                      <td>{fee.dueDate}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'timetable' && (
+          <section className="panel">
+            <h3>Academic Timetable</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Day</th>
+                  <th>Period</th>
+                  <th>Class</th>
+                  <th>Subject</th>
+                  <th>Teacher</th>
+                </tr>
+              </thead>
+              <tbody>
+                {timetable.map((item, idx) => (
+                  <tr key={`${item.day}-${idx}`}>
+                    <td>{item.day}</td>
+                    <td>{item.period}</td>
+                    <td>{item.class}</td>
+                    <td>{item.subject}</td>
+                    <td>{item.teacher}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        )}
+      </main>
+    </div>
+  );
 }
+
+export default App;

@@ -1,10 +1,10 @@
 import express from 'express';
-import { getAttendance } from '../services/schoolService.js';
+import { getTeachers } from '../services/schoolService.js';
 
 const router = express.Router();
 
-router.get('/attendance', (req, res) => {
-  res.json(getAttendance());
+router.get('/teachers', (req, res) => {
+  res.json(getTeachers());
 });
 
 export default router;

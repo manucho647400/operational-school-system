@@ -1,10 +1,15 @@
 import express from 'express';
-import { getTeachers } from '../services/schoolService.js';
+import { getStudents, addStudent } from '../services/schoolService.js';
 
 const router = express.Router();
 
-router.get('/teachers', (req, res) => {
-  res.json(getTeachers());
+router.get('/students', (req, res) => {
+  res.json(getStudents());
+});
+
+router.post('/students', (req, res) => {
+  const student = addStudent(req.body);
+  res.status(201).json(student);
 });
 
 export default router;
