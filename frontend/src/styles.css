@@ -11,31 +11,40 @@ function App() {
   const [fees, setFees] = useState([]);
   const [classes, setClasses] = useState([]);
   const [timetable, setTimetable] = useState([]);
+  const [examResults, setExamResults] = useState([]);
+  const [reportCards, setReportCards] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [loginForm, setLoginForm] = useState({ email: 'admin@joyvalley.ac.ke', password: 'admin123' });
   const [studentForm, setStudentForm] = useState({ name: '', className: '', age: '', gender: 'Female' });
   const [feeForm, setFeeForm] = useState({ student: '', amount: '', status: 'Pending', dueDate: '' });
   const [attendanceForm, setAttendanceForm] = useState({ date: '', present: '', absent: '', late: '' });
+  const [examForm, setExamForm] = useState({ student: '', className: 'Grade 4', subject: 'Mathematics', score: '', term: 'Term 1' });
 
   const fetchAll = async () => {
     try {
-      const [dashboardRes, studentsRes, teachersRes, attendanceRes, feesRes, classesRes, timetableRes] = await Promise.all([
+      const [dashboardRes, studentsRes, teachersRes, attendanceRes, feesRes, classesRes, timetableRes, examsRes, reportsRes] = await Promise.all([
         fetch(`${API_BASE}/dashboard`),
         fetch(`${API_BASE}/students`),
         fetch(`${API_BASE}/teachers`),
         fetch(`${API_BASE}/attendance`),
         fetch(`${API_BASE}/fees`),
         fetch(`${API_BASE}/classes`),
-        fetch(`${API_BASE}/timetable`)
+        fetch(`${API_BASE}/timetable`),
+        fetch(`${API_BASE}/exams`),
+        fetch(`${API_BASE}/reports`)
       ]);
 
-      const [dashboardData, studentsData, teachersData, attendanceData, feesData, classesData, timetableData] = await Promise.all([
+      const [dashboardData, studentsData, teachersData, attendanceData, feesData, classesData, timetableData, examsData, reportsData] = await Promise.all([
         dashboardRes.json(),
         studentsRes.json(),
         teachersRes.json(),
         attendanceRes.json(),
         feesRes.json(),
         classesRes.json(),
-        timetableRes.json()
+        timetableRes.json(),
+        examsRes.json(),
+        reportsRes.json()
       ]);
 
       setDashboard(dashboardData);
@@ -45,6 +54,8 @@ function App() {
       setFees(feesData);
       setClasses(classesData);
       setTimetable(timetableData);
+      setExamResults(examsData);
+      setReportCards(reportsData);
     } catch (error) {
       console.error('Failed to load school system data', error);
     } finally {
@@ -55,6 +66,28 @@ function App() {
   useEffect(() => {
     fetchAll();
   }, []);
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await fetch(`${API_BASE}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(loginForm)
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        alert(data.message || 'Login failed');
+        return;
+      }
+
+      setUser(data);
+      alert(`Welcome, ${data.name}!`);
+    } catch (error) {
+      console.error('Login error', error);
+    }
+  };
 
   const handleStudentSubmit = async (event) => {
     event.preventDefault();
@@ -127,13 +160,37 @@ function App() {
     }
   };
 
+  const handleExamSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      const response = await fetch(`${API_BASE}/exams`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...examForm,
+          score: Number(examForm.score)
+        })
+      });
+
+      if (response.ok) {
+        setExamForm({ student: '', className: 'Grade 4', subject: 'Mathematics', score: '', term: 'Term 1' });
+        fetchAll();
+      }
+    } catch (error) {
+      console.error('Error saving exam result', error);
+    }
+  };
+
   const navItems = [
     { key: 'dashboard', label: 'Dashboard' },
     { key: 'students', label: 'Students' },
     { key: 'teachers', label: 'Teachers' },
     { key: 'attendance', label: 'Attendance' },
     { key: 'fees', label: 'Fees' },
-    { key: 'timetable', label: 'Timetable' }
+    { key: 'timetable', label: 'Timetable' },
+    { key: 'exams', label: 'Exams' },
+    { key: 'reports', label: 'Reports' }
   ];
 
   if (loading) {
@@ -166,10 +223,40 @@ function App() {
             <p className="eyebrow">Single School Operations</p>
             <h1>{dashboard?.schoolName || 'School Dashboard'}</h1>
           </div>
-          <div className="header-pill">Principal: {dashboard?.principal}</div>
+          <div className="header-group">
+            <div className="header-pill">Principal: {dashboard?.principal}</div>
+            {user ? (
+              <div className="header-pill user-pill">Logged in: {user.name} ({user.role})</div>
+            ) : (
+              <div className="header-pill user-pill">Guest</div>
+            )}
+          </div>
         </header>
 
-        {activeTab === 'dashboard' && (
+        {!user && (
+          <section className="panel login-panel">
+            <h3>School Login</h3>
+            <form className="form-grid" onSubmit={handleLogin}>
+              <input
+                type="email"
+                value={loginForm.email}
+                onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+                placeholder="Email"
+                required
+              />
+              <input
+                type="password"
+                value={loginForm.password}
+                onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                placeholder="Password"
+                required
+              />
+              <button type="submit" className="primary-btn">Login</button>
+            </form>
+          </section>
+        )}
+
+        {user && activeTab === 'dashboard' && (
           <>
             <section className="stats-grid">
               <div className="stat-card">
@@ -268,7 +355,7 @@ function App() {
           </>
         )}
 
-        {activeTab === 'students' && (
+        {user && activeTab === 'students' && (
           <section className="content-stack">
             <div className="panel">
               <h3>Add Student</h3>
@@ -329,7 +416,7 @@ function App() {
           </section>
         )}
 
-        {activeTab === 'teachers' && (
+        {user && activeTab === 'teachers' && (
           <section className="panel">
             <h3>Staff and Teachers</h3>
             <table>
@@ -355,7 +442,7 @@ function App() {
           </section>
         )}
 
-        {activeTab === 'attendance' && (
+        {user && activeTab === 'attendance' && (
           <section className="content-stack">
             <div className="panel">
               <h3>Record Daily Attendance</h3>
@@ -405,7 +492,7 @@ function App() {
           </section>
         )}
 
-        {activeTab === 'fees' && (
+        {user && activeTab === 'fees' && (
           <section className="content-stack">
             <div className="panel">
               <h3>Record Fee Payment</h3>
@@ -467,7 +554,7 @@ function App() {
           </section>
         )}
 
-        {activeTab === 'timetable' && (
+        {user && activeTab === 'timetable' && (
           <section className="panel">
             <h3>Academic Timetable</h3>
             <table>
@@ -488,6 +575,106 @@ function App() {
                     <td>{item.class}</td>
                     <td>{item.subject}</td>
                     <td>{item.teacher}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        )}
+
+        {user && activeTab === 'exams' && (
+          <section className="content-stack">
+            <div className="panel">
+              <h3>Record Exam Result</h3>
+              <form className="form-grid" onSubmit={handleExamSubmit}>
+                <input
+                  value={examForm.student}
+                  onChange={(e) => setExamForm({ ...examForm, student: e.target.value })}
+                  placeholder="Student name"
+                  required
+                />
+                <input
+                  value={examForm.className}
+                  onChange={(e) => setExamForm({ ...examForm, className: e.target.value })}
+                  placeholder="Class"
+                  required
+                />
+                <input
+                  value={examForm.subject}
+                  onChange={(e) => setExamForm({ ...examForm, subject: e.target.value })}
+                  placeholder="Subject"
+                  required
+                />
+                <input
+                  value={examForm.score}
+                  onChange={(e) => setExamForm({ ...examForm, score: e.target.value })}
+                  type="number"
+                  placeholder="Score"
+                  min="0"
+                  max="100"
+                  required
+                />
+                <select
+                  value={examForm.term}
+                  onChange={(e) => setExamForm({ ...examForm, term: e.target.value })}
+                >
+                  <option value="Term 1">Term 1</option>
+                  <option value="Term 2">Term 2</option>
+                  <option value="Term 3">Term 3</option>
+                </select>
+                <button type="submit" className="primary-btn">Save Result</button>
+              </form>
+            </div>
+
+            <div className="panel">
+              <h3>Exam Results</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Subject</th>
+                    <th>Score</th>
+                    <th>Grade</th>
+                    <th>Term</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {examResults.map((exam) => (
+                    <tr key={exam.id}>
+                      <td>{exam.student}</td>
+                      <td>{exam.subject}</td>
+                      <td>{exam.score}</td>
+                      <td>{exam.grade}</td>
+                      <td>{exam.term}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {user && activeTab === 'reports' && (
+          <section className="panel">
+            <h3>Report Cards</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Class</th>
+                  <th>Average</th>
+                  <th>Term</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reportCards.map((report) => (
+                  <tr key={report.id}>
+                    <td>{report.student}</td>
+                    <td>{report.className}</td>
+                    <td>{report.average}%</td>
+                    <td>{report.term}</td>
+                    <td>{report.remarks}</td>
                   </tr>
                 ))}
               </tbody>

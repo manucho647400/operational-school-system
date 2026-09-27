@@ -107,12 +107,24 @@ button, input, select {
   font-size: 2rem;
 }
 
+.header-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .header-pill {
   background: #e0ecff;
   color: #1849a9;
   padding: 10px 16px;
   border-radius: 999px;
   font-weight: 600;
+}
+
+.user-pill {
+  background: #dcfce7;
+  color: #166534;
 }
 
 .primary-btn {
@@ -169,6 +181,10 @@ button, input, select {
 .panel h3 {
   margin-top: 0;
   margin-bottom: 16px;
+}
+
+.login-panel {
+  margin-bottom: 18px;
 }
 
 .content-stack {

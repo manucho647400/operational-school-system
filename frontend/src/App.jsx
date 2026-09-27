@@ -8,6 +8,8 @@ import teachersRoutes from './routes/teachers.js';
 import attendanceRoutes from './routes/attendance.js';
 import feesRoutes from './routes/fees.js';
 import timetableRoutes from './routes/timetable.js';
+import examsRoutes from './routes/exams.js';
+import authRoutes from './routes/auth.js';
 
 dotenv.config();
 
@@ -35,6 +37,8 @@ app.use('/api', teachersRoutes);
 app.use('/api', attendanceRoutes);
 app.use('/api', feesRoutes);
 app.use('/api', timetableRoutes);
+app.use('/api', examsRoutes);
+app.use('/api', authRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
