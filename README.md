@@ -1,8 +1,8 @@
-# 🎓 West and Star Academy - School Management System
+# 🏫 West End Star Academy - School Management System
 
-A modern, scalable operational school management system for single schools with modules for admin, academics, attendance, and finance.
+A modern, scalable operational school management system for single schools with modules for admin, academics, attendance, and finance. **Now with full internet accessibility!**
 
-## 🌐 Features
+## 🌟 Features
 
 - **Dashboard** - Real-time overview of school operations
 - **Student Management** - Enrollment, profiles, and status tracking
@@ -10,15 +10,17 @@ A modern, scalable operational school management system for single schools with 
 - **Attendance** - Daily attendance recording and tracking
 - **Finance** - Fee management and payment tracking
 - **Timetable** - Academic schedule management
-- **Exams** - Exam results and grading
+- **Exams** - Exam results and grading system
 - **Reports** - Report cards and analytics
-- **Internet-Ready** - Deploy anywhere for global access
+- **🌍 Internet-Ready** - Deploy worldwide with 4 different methods
+- **🎨 Theme** - Beautiful green interface for West End Star Academy
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js 18+
 - npm or yarn
+- (Optional) Docker for containerized deployment
 
 ### Local Development
 
@@ -41,166 +43,227 @@ npm run dev  # Runs on http://localhost:5173
 ### Access the Application
 - **Frontend:** http://localhost:5173
 - **API:** http://localhost:5000/api
+- **Health Check:** http://localhost:5000/api/health
 
-## 🌍 Deployment (Internet Access)
+## 🌍 Deploy Online (Choose One)
 
-For detailed deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md)
+### 🎯 4 Deployment Options Available
 
-### Quick Deploy Options:
+1. **ngrok** - Quick testing (5 min)
+   ```bash
+   # Temporary public URL for testing
+   ngrok http 5000
+   ```
 
-1. **ngrok** (Testing): Expose locally to internet
-2. **Railway.app** (Easy): One-click deployment
-3. **Heroku** (Free tier available)
-4. **DigitalOcean** (Affordable VPS)
-5. **Docker** (Container deployment)
+2. **Docker** - Container deployment
+   ```bash
+   docker-compose up -d
+   ```
 
-### One-Command Docker Deploy:
-```bash
-docker-compose up -d
+3. **Railway.app** - Recommended for beginners ⭐
+   - One-click deployment
+   - Free tier available
+   - Full guide in DEPLOYMENT.md
+
+4. **Heroku** - Classic PaaS
+   - Traditional workflow
+   - See DEPLOYMENT.md for setup
+
+### Complete Deployment Guide
+
+See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for detailed instructions on all 4 methods:
+- Step-by-step setup
+- Environment configuration
+- SSL/HTTPS setup
+- Troubleshooting
+
+## 🏗️ Project Structure
+
 ```
-
-Then access:
-- Frontend: http://YOUR_SERVER_IP:5173
-- Backend: http://YOUR_SERVER_IP:5000/api
-
-## 📁 Project Structure
-
-```
-operational-school-system/
+west-end-star-academy/
 ├── backend/
 │   ├── src/
-│   │   ├── app.js          # Express app configuration
-│   │   ├── server.js       # Server entry point
+│   │   ├── app.js          # Express app with CORS config
+│   │   ├── server.js       # Server with network IP detection
 │   │   ├── routes/         # API routes
 │   │   ├── services/       # Business logic
 │   │   └── data/           # Data models
-│   ├── package.json
-│   └── Dockerfile
+│   ├── Dockerfile          # Container image
+│   └── package.json        # Dependencies
 ├── frontend/
 │   ├── src/
 │   │   ├── App.jsx         # Main React component
-│   │   ├── config.js       # API configuration
+│   │   ├── config.js       # Flexible API configuration
 │   │   ├── styles.css      # Green theme styling
 │   │   └── main.jsx        # Entry point
-│   ├── package.json
-│   ├── vite.config.js
-│   └── Dockerfile
-├── docker-compose.yml      # Docker orchestration
+│   ├── Dockerfile          # Nginx container
+│   ├── vite.config.js      # Build configuration
+│   └── package.json        # Dependencies
+├── docker-compose.yml      # Multi-container orchestration
 ├── DEPLOYMENT.md           # Deployment guide
+├── railway.json            # Railway.app config
+├── Procfile                # Heroku configuration
 └── .env.example            # Environment template
 ```
 
 ## 🎨 Customization
 
 ### Change School Name
-Update `APP_NAME` in `.env`:
+Update in `.env`:
 ```bash
-APP_NAME=West and Star Academy
+APP_NAME=West End Star Academy
 ```
 
 ### Change Theme Color
-Update `APP_THEME_COLOR` in `.env`:
+Update in `.env`:
 ```bash
 APP_THEME_COLOR=green
 ```
 
+### Change API Base URL
+In `frontend/src/config.js`:
+```javascript
+VITE_API_URL=https://yourdomain.com/api
+```
+
 ## 🔐 Security
 
-- CORS configured for safe cross-origin requests
-- JWT authentication support
-- Environment variables for sensitive data
-- Production-ready error handling
+- ✅ CORS configured for safe cross-origin requests
+- ✅ JWT authentication prepared
+- ✅ Environment variables for sensitive data
+- ✅ Production-ready error handling
+- ✅ Support for HTTPS/SSL
 
-## 📝 Environment Variables
+## 📋 Environment Variables
 
-See [.env.example](./.env.example) for all available options:
+See [.env.example](./.env.example) for all options:
 
 ```bash
 # Server
 PORT=5000
 HOST=0.0.0.0
+NODE_ENV=production
 
 # Client
 CLIENT_URL=http://localhost:5173
+PROD_CLIENT_URL=https://yourdomain.com
+VITE_API_URL=https://yourdomain.com/api
 
 # App
-APP_NAME=West and Star Academy
+APP_NAME=West End Star Academy
 APP_THEME_COLOR=green
+DEPLOYMENT_MODE=docker  # local, docker, railway, heroku, ngrok
 ```
 
-## 🛠️ Development
+## 🛠️ Development Commands
 
-### Backend Commands
+### Backend
 ```bash
 cd backend
-npm install      # Install dependencies
-npm run dev      # Run in development mode
-npm start        # Run in production mode
+npm install       # Install dependencies
+npm run dev       # Development mode
+npm start         # Production mode
 ```
 
-### Frontend Commands
+### Frontend
 ```bash
 cd frontend
-npm install      # Install dependencies
-npm run dev      # Run in development mode
-npm run build    # Build for production
-npm run preview  # Preview production build
+npm install       # Install dependencies
+npm run dev       # Development mode
+npm run build     # Build for production
+npm run preview   # Preview production build
 ```
 
-## 📊 API Endpoints
+### Docker
+```bash
+docker-compose up -d      # Start all services
+docker-compose down        # Stop all services
+docker-compose logs -f     # View live logs
+docker-compose ps          # View running containers
+```
 
-- `GET /api/health` - Health check
-- `POST /api/login` - User authentication
-- `GET /api/dashboard` - Dashboard data
-- `GET/POST /api/students` - Student management
-- `GET /api/teachers` - Teacher directory
-- `GET/POST /api/attendance` - Attendance records
-- `GET/POST /api/fees` - Fee management
-- `GET /api/timetable` - Academic schedule
-- `GET/POST /api/exams` - Exam results
-- `GET /api/reports` - Report cards
+## 📡 API Endpoints
 
-## 🌐 Making it Internet-Accessible
+```
+GET  /api/health           - Health check
+POST /api/login            - User authentication
+GET  /api/dashboard        - Dashboard data
+GET  /api/students         - List students
+POST /api/students         - Create student
+GET  /api/teachers         - Teacher directory
+GET  /api/attendance       - Attendance records
+POST /api/attendance       - Record attendance
+GET  /api/fees             - Fee information
+POST /api/fees             - Record fees
+GET  /api/timetable        - Academic schedule
+GET  /api/exams            - Exam results
+POST /api/exams            - Record exam results
+GET  /api/reports          - Report cards
+```
 
-### Simple Steps:
+## 🧪 Testing
 
-1. **Find your public IP:**
-   ```bash
-   curl ifconfig.me
-   ```
+### Health Check
+```bash
+curl http://localhost:5000/api/health
+```
 
-2. **Deploy on a server:**
-   - Use cloud platform (Railway, Heroku, etc.)
-   - Or VPS (DigitalOcean, AWS, etc.)
+Expected response:
+```json
+{
+  "status": "ok",
+  "app": "West End Star Academy",
+  "theme": "green",
+  "timestamp": "2026-09-27T06:20:24Z",
+  "environment": "production",
+  "deployment": "docker"
+}
+```
 
-3. **Access from anywhere:**
-   - Browser: `https://yourdomain.com`
-   - Mobile: Same URL
-   - Anywhere: Full internet access
+## 🌐 Network Access
 
-4. **Use custom domain:**
-   - Point domain to server IP
-   - Set up HTTPS/SSL certificate
+Once deployed, access from:
+- 🖥️ Desktop browser
+- 📱 Mobile phone
+- 🌍 Anywhere in the world
+- 🔐 With HTTPS/SSL (recommended for production)
 
-## 📚 Learn More
+## 📚 Documentation
 
-- [DEPLOYMENT.md](./DEPLOYMENT.md) - Complete deployment guide
-- React: https://react.dev
-- Express: https://expressjs.com
-- Vite: https://vitejs.dev
+- [DEPLOYMENT.md](./DEPLOYMENT.md) - Complete deployment guide (4 methods)
+- [README.md](./README.md) - This file
+- [.env.example](./.env.example) - Configuration template
+
+## 🚨 Troubleshooting
+
+### "Cannot reach server"
+1. Check firewall (allow ports 5000, 5173)
+2. Verify server running: `curl http://localhost:5000/api/health`
+3. Check network connectivity
+
+### "CORS error"
+1. Update `ALLOWED_ORIGINS` in backend/src/app.js
+2. Restart backend
+3. Clear browser cache (Ctrl+Shift+Delete)
+
+### "API not responding"
+1. Check frontend .env API URL
+2. Check network tab in browser DevTools (F12)
+3. Verify backend is running
 
 ## 📞 Support
 
-For issues or questions:
-1. Check [DEPLOYMENT.md](./DEPLOYMENT.md)
-2. Review logs: `npm run dev` output
+1. Check [DEPLOYMENT.md](./DEPLOYMENT.md) troubleshooting section
+2. Review backend logs: `npm run dev`
 3. Check browser console (F12)
 4. Check network requests in DevTools
 
 ## 📄 License
 
-MIT License - feel free to use for educational and commercial purposes.
+MIT License - Feel free to use for educational and commercial purposes.
 
 ---
 
-**🎓 West and Star Academy** - Empowering Schools with Technology
+**🏫 West End Star Academy** - Modern School Management System
+
+**Deployed. Accessible. Worldwide.** 🌍✅
