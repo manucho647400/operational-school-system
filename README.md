@@ -1,273 +1,206 @@
-:root {
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color: #122033;
-  background: #eef4ff;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+# 🎓 West and Star Academy - School Management System
 
-* {
-  box-sizing: border-box;
-}
+A modern, scalable operational school management system for single schools with modules for admin, academics, attendance, and finance.
 
-html, body, #root {
-  margin: 0;
-  min-height: 100%;
-  min-width: 100%;
-}
+## 🌐 Features
 
-body {
-  margin: 0;
-  background: linear-gradient(180deg, #edf6ff 0%, #f5f7fb 100%);
-}
+- **Dashboard** - Real-time overview of school operations
+- **Student Management** - Enrollment, profiles, and status tracking
+- **Teacher Management** - Staff directory and assignments
+- **Attendance** - Daily attendance recording and tracking
+- **Finance** - Fee management and payment tracking
+- **Timetable** - Academic schedule management
+- **Exams** - Exam results and grading
+- **Reports** - Report cards and analytics
+- **Internet-Ready** - Deploy anywhere for global access
 
-button, input, select {
-  font: inherit;
-}
+## 🚀 Quick Start
 
-.app-shell {
-  display: flex;
-  min-height: 100vh;
-}
+### Prerequisites
+- Node.js 18+
+- npm or yarn
 
-.sidebar {
-  width: 240px;
-  background: #0f172a;
-  color: #edf6ff;
-  padding: 24px 18px;
-}
+### Local Development
 
-.brand {
-  border-bottom: 1px solid rgba(255,255,255,0.12);
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-}
+```bash
+# Clone the repository
+git clone https://github.com/manucho647400/operational-school-system.git
+cd operational-school-system
 
-.brand h2 {
-  margin: 0;
-  font-size: 1.5rem;
-}
+# Setup Backend
+cd backend
+npm install
+npm run dev  # Runs on http://localhost:5000
 
-.brand small {
-  display: block;
-  margin-top: 5px;
-  color: #c9d9f5;
-}
+# In another terminal, Setup Frontend
+cd frontend
+npm install
+npm run dev  # Runs on http://localhost:5173
+```
 
-.sidebar nav {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+### Access the Application
+- **Frontend:** http://localhost:5173
+- **API:** http://localhost:5000/api
 
-.nav-button {
-  background: transparent;
-  color: #dfeafc;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  padding: 10px 12px;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
+## 🌍 Deployment (Internet Access)
 
-.nav-button.active,
-.nav-button:hover {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.12);
-}
+For detailed deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md)
 
-.main-content {
-  flex: 1;
-  padding: 28px;
-}
+### Quick Deploy Options:
 
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 22px;
-}
+1. **ngrok** (Testing): Expose locally to internet
+2. **Railway.app** (Easy): One-click deployment
+3. **Heroku** (Free tier available)
+4. **DigitalOcean** (Affordable VPS)
+5. **Docker** (Container deployment)
 
-.eyebrow {
-  color: #4f46e5;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin: 0 0 6px;
-  font-size: 0.74rem;
-  font-weight: 700;
-}
+### One-Command Docker Deploy:
+```bash
+docker-compose up -d
+```
 
-.topbar h1 {
-  margin: 0;
-  font-size: 2rem;
-}
+Then access:
+- Frontend: http://YOUR_SERVER_IP:5173
+- Backend: http://YOUR_SERVER_IP:5000/api
 
-.header-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
+## 📁 Project Structure
 
-.header-pill {
-  background: #e0ecff;
-  color: #1849a9;
-  padding: 10px 16px;
-  border-radius: 999px;
-  font-weight: 600;
-}
+```
+operational-school-system/
+├── backend/
+│   ├── src/
+│   │   ├── app.js          # Express app configuration
+│   │   ├── server.js       # Server entry point
+│   │   ├── routes/         # API routes
+│   │   ├── services/       # Business logic
+│   │   └── data/           # Data models
+│   ├── package.json
+│   └── Dockerfile
+├── frontend/
+│   ├── src/
+│   │   ├── App.jsx         # Main React component
+│   │   ├── config.js       # API configuration
+│   │   ├── styles.css      # Green theme styling
+│   │   └── main.jsx        # Entry point
+│   ├── package.json
+│   ├── vite.config.js
+│   └── Dockerfile
+├── docker-compose.yml      # Docker orchestration
+├── DEPLOYMENT.md           # Deployment guide
+└── .env.example            # Environment template
+```
 
-.user-pill {
-  background: #dcfce7;
-  color: #166534;
-}
+## 🎨 Customization
 
-.primary-btn {
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 18px;
-  cursor: pointer;
-  font-weight: 600;
-}
+### Change School Name
+Update `APP_NAME` in `.env`:
+```bash
+APP_NAME=West and Star Academy
+```
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(150px, 1fr));
-  gap: 18px;
-  margin-bottom: 24px;
-}
+### Change Theme Color
+Update `APP_THEME_COLOR` in `.env`:
+```bash
+APP_THEME_COLOR=green
+```
 
-.stat-card,
-.panel {
-  background: rgba(255,255,255,0.92);
-  border: 1px solid #dbe7ff;
-  border-radius: 16px;
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.04);
-}
+## 🔐 Security
 
-.stat-card {
-  padding: 20px 18px;
-}
+- CORS configured for safe cross-origin requests
+- JWT authentication support
+- Environment variables for sensitive data
+- Production-ready error handling
 
-.stat-card span {
-  display: block;
-  color: #42526e;
-  font-size: 0.82rem;
-  margin-bottom: 8px;
-}
+## 📝 Environment Variables
 
-.stat-card strong {
-  font-size: 2rem;
-}
+See [.env.example](./.env.example) for all available options:
 
-.panel-grid {
-  display: grid;
-  grid-template-columns: 1.3fr 1fr;
-  gap: 18px;
-  margin-bottom: 18px;
-}
+```bash
+# Server
+PORT=5000
+HOST=0.0.0.0
 
-.panel {
-  padding: 20px;
-}
+# Client
+CLIENT_URL=http://localhost:5173
 
-.panel h3 {
-  margin-top: 0;
-  margin-bottom: 16px;
-}
+# App
+APP_NAME=West and Star Academy
+APP_THEME_COLOR=green
+```
 
-.login-panel {
-  margin-bottom: 18px;
-}
+## 🛠️ Development
 
-.content-stack {
-  display: grid;
-  gap: 18px;
-}
+### Backend Commands
+```bash
+cd backend
+npm install      # Install dependencies
+npm run dev      # Run in development mode
+npm start        # Run in production mode
+```
 
-.attendance-row,
-.list-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 10px 0;
-  border-bottom: 1px solid #edf2f7;
-}
+### Frontend Commands
+```bash
+cd frontend
+npm install      # Install dependencies
+npm run dev      # Run in development mode
+npm run build    # Build for production
+npm run preview  # Preview production build
+```
 
-.attendance-row.highlight {
-  background: #eef6ff;
-  border-radius: 10px;
-  padding: 12px 14px;
-  margin-bottom: 8px;
-}
+## 📊 API Endpoints
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
+- `GET /api/health` - Health check
+- `POST /api/login` - User authentication
+- `GET /api/dashboard` - Dashboard data
+- `GET/POST /api/students` - Student management
+- `GET /api/teachers` - Teacher directory
+- `GET/POST /api/attendance` - Attendance records
+- `GET/POST /api/fees` - Fee management
+- `GET /api/timetable` - Academic schedule
+- `GET/POST /api/exams` - Exam results
+- `GET /api/reports` - Report cards
 
-th, td {
-  text-align: left;
-  padding: 10px 8px;
-  border-bottom: 1px solid #edf2f7;
-}
+## 🌐 Making it Internet-Accessible
 
-th {
-  color: #42526e;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
+### Simple Steps:
 
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
-}
+1. **Find your public IP:**
+   ```bash
+   curl ifconfig.me
+   ```
 
-input,
-select {
-  width: 100%;
-  border: 1px solid #d3dceb;
-  border-radius: 10px;
-  background: white;
-  padding: 10px 12px;
-  color: #18314b;
-}
+2. **Deploy on a server:**
+   - Use cloud platform (Railway, Heroku, etc.)
+   - Or VPS (DigitalOcean, AWS, etc.)
 
-.loading {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #1d4ed8;
-}
+3. **Access from anywhere:**
+   - Browser: `https://yourdomain.com`
+   - Mobile: Same URL
+   - Anywhere: Full internet access
 
-@media (max-width: 980px) {
-  .app-shell {
-    flex-direction: column;
-  }
+4. **Use custom domain:**
+   - Point domain to server IP
+   - Set up HTTPS/SSL certificate
 
-  .sidebar {
-    width: 100%;
-  }
+## 📚 Learn More
 
-  .stats-grid,
-  .panel-grid {
-    grid-template-columns: 1fr;
-  }
+- [DEPLOYMENT.md](./DEPLOYMENT.md) - Complete deployment guide
+- React: https://react.dev
+- Express: https://expressjs.com
+- Vite: https://vitejs.dev
 
-  .topbar {
-    flex-direction: column;
-    gap: 12px;
-    align-items: flex-start;
-  }
-}
+## 📞 Support
+
+For issues or questions:
+1. Check [DEPLOYMENT.md](./DEPLOYMENT.md)
+2. Review logs: `npm run dev` output
+3. Check browser console (F12)
+4. Check network requests in DevTools
+
+## 📄 License
+
+MIT License - feel free to use for educational and commercial purposes.
+
+---
+
+**🎓 West and Star Academy** - Empowering Schools with Technology
