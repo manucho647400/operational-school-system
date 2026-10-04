@@ -15,7 +15,6 @@ dotenv.config();
 
 const app = express();
 
-// CORS Configuration for internet access
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
@@ -34,17 +33,15 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(morgan('dev'));
 
-// Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    app: process.env.APP_NAME || 'West and Star Academy',
+    app: process.env.APP_NAME || 'West End Star Academy',
     theme: process.env.APP_THEME_COLOR || 'green',
     timestamp: new Date().toISOString()
   });
 });
 
-// API Routes
 app.use('/api', dashboardRoutes);
 app.use('/api', studentsRoutes);
 app.use('/api', teachersRoutes);
@@ -54,15 +51,13 @@ app.use('/api', timetableRoutes);
 app.use('/api', examsRoutes);
 app.use('/api', authRoutes);
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     message: 'Internal server error',
     error: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
