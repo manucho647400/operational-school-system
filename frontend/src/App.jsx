@@ -1,47 +1,58 @@
-import express from 'express';
-import cors from 'cors';
-import morgan from 'morgan';
-import dotenv from 'dotenv';
-import dashboardRoutes from './routes/dashboard.js';
-import studentsRoutes from './routes/students.js';
-import teachersRoutes from './routes/teachers.js';
-import attendanceRoutes from './routes/attendance.js';
-import feesRoutes from './routes/fees.js';
-import timetableRoutes from './routes/timetable.js';
-import examsRoutes from './routes/exams.js';
-import authRoutes from './routes/auth.js';
+import { useEffect, useState } from 'react';
 
-dotenv.config();
+const API_BASE = 'http://localhost:5000/api';
 
-const app = express();
+export default function App() {
+  const [health, setHealth] = useState(null);
+  const [error, setError] = useState('');
 
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
-  credentials: true
-}));
+  useEffect(() => {
+    fetch(`${API_BASE}/health`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => setHealth(data))
+      .catch((err) => setError(err.message || 'Failed to connect to the API'));
+  }, []);
 
-app.use(express.json());
-app.use(morgan('dev'));
+  return (
+    <div className="app-shell">
+      <header className="topbar">
+        <div>
+          <p className="eyebrow">School management</p>
+          <h1>West End Star Academy</h1>
+        </div>
+      </header>
 
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    app: process.env.APP_NAME || 'Operational School System',
-    timestamp: new Date().toISOString()
-  });
-});
+      <main className="card-grid">
+        <section className="card highlight">
+          <h2>System Status</h2>
+          {error ? (
+            <p className="status error">API unavailable: {error}</p>
+          ) : health ? (
+            <>
+              <p className="status ok">{health.status}</p>
+              <p>{health.app}</p>
+              <small>{new Date(health.timestamp).toLocaleString()}</small>
+            </>
+          ) : (
+            <p className="status loading">Loading...</p>
+          )}
+        </section>
 
-app.use('/api', dashboardRoutes);
-app.use('/api', studentsRoutes);
-app.use('/api', teachersRoutes);
-app.use('/api', attendanceRoutes);
-app.use('/api', feesRoutes);
-app.use('/api', timetableRoutes);
-app.use('/api', examsRoutes);
-app.use('/api', authRoutes);
-
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
-});
-
-export default app;
+        <section className="card">
+          <h2>Quick Access</h2>
+          <ul>
+            <li>Dashboard</li>
+            <li>Students</li>
+            <li>Teachers</li>
+            <li>Attendance</li>
+            <li>Fees</li>
+            <li>Exams</li>
+          </ul>
+        </section>
+      </main>
+    </div>
+  );
+}
